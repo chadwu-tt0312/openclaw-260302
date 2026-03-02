@@ -1,0 +1,118 @@
+services:
+  webtop:
+    image: linuxserver/webtop:ubuntu-kde
+    container_name: webtop
+    shm_size: "2gb"
+    ports:
+      - "6080:3000"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Taipei
+      # 透過此環境變數，可以在啟動時自動執行安裝指令
+      - CUSTOM_SCRIPTS=/config/install_tools.sh
+    volumes:
+      - ./data/webtop:/config
+    restart: unless-stopped
+
+  openclaw:
+    image: node:22-bookworm
+    container_name: openclaw
+    working_dir: /app
+    volumes:
+      - ./data/openclaw:/config
+    environment:
+      - TZ=Asia/Taipei
+      - OPENCLAW_HOME=/config
+      - NPM_CONFIG_PREFIX=/config/.npm-global
+      - PATH=/config/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command:
+      - bash
+      - -lc
+      - |
+        set -e
+        # 安裝 Homebrew
+        # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        # 修正：使用 $$PATH 避免被 Docker Compose 替換為宿主機路徑
+        export PATH=/config/.npm-global/bin:$$PATH
+
+        if ! command -v openclaw >/dev/null 2>&1; then
+          npm i -g openclaw
+        fi
+
+        mkdir -p /config/.openclaw
+        # 僅在 config 不存在時寫入，避免每次啟動覆蓋既有 token/channels。
+        # 預先寫入 gateway.auth.token，gateway 啟動時就不會再產生並改寫 config（避免 Config overwrite / missing-meta 日誌）。
+        if [ ! -f /config/.openclaw/openclaw.json ]; then
+          GATEWAY_TOKEN=$$(openssl rand -hex 24 2>/dev/null || python3 -c 'import secrets; print(secrets.token_hex(24))')
+          cat > /config/.openclaw/openclaw.json <<EOF
+        {
+          "gateway": {
+            "mode": "local",
+            "port": 18789,
+            "reload": { "mode": "off" },
+            "auth": { "mode": "token", "token": "$$GATEWAY_TOKEN" }
+          },
+          "auth": {
+            "profiles": {
+              "google:default": {
+                "provider": "google",
+                "mode": "api_key"
+              }
+            }
+          },
+          "agents": {
+            "defaults": {
+              "model": {
+                "primary": "google/gemini-3-flash-preview"
+              },
+              "workspace": "/config/.openclaw/workspace",
+              "compaction": {
+                "mode": "safeguard"
+              }
+            }
+          }
+        }
+        EOF
+        fi
+
+        # 安裝 socat（用於把 0.0.0.0 暴露成容器內可被別的容器訪問）
+        apt-get update -y >/dev/null 2>&1 || true
+        apt-get install -y socat >/dev/null 2>&1 || true
+
+        # 讓別的容器能訪問 openclaw 的 28789/28791（實際轉到 127.0.0.1:18789/18791）
+        socat TCP-LISTEN:28789,fork,reuseaddr TCP:127.0.0.1:18789 &
+        socat TCP-LISTEN:28791,fork,reuseaddr TCP:127.0.0.1:18791 &
+
+        exec openclaw gateway --port 18789 --allow-unconfigured
+    ports:
+      # HostOS -> openclaw(28789/28791) -> openclaw內部(18789/18791)
+      - "18789:28789"
+      - "18791:28791"
+    restart: unless-stopped
+
+  webtop_proxy:
+    image: alpine:3.20
+    container_name: webtop_proxy
+    depends_on:
+      - openclaw
+      - webtop
+    network_mode: "service:webtop"
+    entrypoint: ["/bin/sh", "-lc"]
+    command:
+      - |
+        set -e
+        apk add --no-cache socat curl >/dev/null 2>&1
+
+        echo "[webtop_proxy] waiting for openclaw:28789..."
+        until curl -fsS http://openclaw:28789/ >/dev/null 2>&1; do
+          sleep 1
+        done
+        echo "[webtop_proxy] openclaw is up, start forwarding..."
+
+        # 關鍵：這裡讓 “webtop 的 localhost:18789” 實際轉發到 openclaw:28789
+        socat TCP-LISTEN:18789,fork,reuseaddr TCP:openclaw:28789 &
+        socat TCP-LISTEN:18791,fork,reuseaddr TCP:openclaw:28791 &
+
+        tail -f /dev/null
+    restart: unless-stopped
