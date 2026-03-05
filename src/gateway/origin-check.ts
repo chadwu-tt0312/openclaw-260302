@@ -7,6 +7,21 @@ type OriginCheckResult =
     }
   | { ok: false; reason: string };
 
+/**
+ * 正規化 origin：移除預設 port（https → :443，http → :80），
+ * 讓 allowlist 單一項目可同時匹配「有無帶預設 port」的請求（例如 GitHub Codespaces / 反向代理常送 :443）。
+ */
+function normalizeOriginForAllowlist(origin: string): string {
+  const lower = origin.trim().toLowerCase();
+  if (lower.endsWith(":443") && (lower.startsWith("https://") || lower.startsWith("wss://"))) {
+    return lower.slice(0, -4);
+  }
+  if (lower.endsWith(":80") && (lower.startsWith("http://") || lower.startsWith("ws://"))) {
+    return lower.slice(0, -3);
+  }
+  return lower;
+}
+
 function parseOrigin(
   originRaw?: string,
 ): { origin: string; host: string; hostname: string } | null {
@@ -39,9 +54,13 @@ export function checkBrowserOrigin(params: {
   }
 
   const allowlist = new Set(
-    (params.allowedOrigins ?? []).map((value) => value.trim().toLowerCase()).filter(Boolean),
+    (params.allowedOrigins ?? [])
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean)
+      .map((v) => (v === "*" ? v : normalizeOriginForAllowlist(v))),
   );
-  if (allowlist.has("*") || allowlist.has(parsedOrigin.origin)) {
+  const requestOriginNormalized = normalizeOriginForAllowlist(parsedOrigin.origin);
+  if (allowlist.has("*") || allowlist.has(parsedOrigin.origin) || allowlist.has(requestOriginNormalized)) {
     return { ok: true, matchedBy: "allowlist" };
   }
 

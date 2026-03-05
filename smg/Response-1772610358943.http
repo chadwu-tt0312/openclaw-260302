@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Connection: close
+Content-Type: application/json
+Date: Wed, 04 Mar 2026 07:45:42 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+{"choices":[{"content_filter_results":{},"finish_reason":"stop","index":0,"logprobs":null,"message":{"annotations":[],"content":"我是 ChatGPT，一個由 OpenAI 訓練的人工智慧語言模型。你可以把我當作一個文字助理：能回答問題、解釋概念、協助寫作、整理資訊、翻譯、產生點子等。你想用我來做什麼？","refusal":null,"role":"assistant"}}],"created":1772610340,"id":"chatcmpl-DFbDIT5dN24s8MxWLBFG02duxNahL","model":"gpt-5.2-2025-12-11","object":"chat.completion","prompt_filter_results":[{"prompt_index":0,"content_filter_results":{}}],"system_fingerprint":null,"usage":{"completion_tokens":72,"completion_tokens_details":{"accepted_prediction_tokens":0,"audio_tokens":0,"reasoning_tokens":0,"rejected_prediction_tokens":0},"prompt_tokens":10,"prompt_tokens_details":{"audio_tokens":0,"cached_tokens":0},"total_tokens":82}}

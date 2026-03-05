@@ -1,0 +1,37 @@
+### AzureOpenAI
+curl -X 'POST' \
+  'http://10.11.197.97/openai/deployments/gpt-5.2/chat/completions' \
+  -H 'accept: */*' \
+  -H 'api-key: xxx' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "temperature": 0.5,
+  "max_completion_tokens": 4000,
+  "model": "gpt-5.2",
+  "stream": false,
+  "messages": [
+    {
+      "role": "user",
+      "content": "你是誰？"
+    }
+  ]
+}'
+
+### test-01
+curl -i -X 'POST' "http://10.11.197.97/openai"
+
+### test-02
+curl -i -X 'POST' "http://10.11.197.97/openai/deployments"
+
+### test API
+curl http://localhost:18789/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer xxx" \
+  -d '{
+    "model": "gemini-flash",
+    "messages": [
+      {"role": "system", "content": "你是一個專業的技術助手。"},
+      {"role": "user", "content": "嘿爪子，幫我解釋一下什麼是 K8s Operator？"}
+    ],
+    "stream": false
+  }'

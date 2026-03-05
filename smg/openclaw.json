@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.1-beta.1",
+    "lastTouchedAt": "2026-03-04T05:12:28.512Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-03-04T05:11:14.923Z",
+    "lastRunVersion": "2026.3.1-beta.1",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "azure:default": {
+        "provider": "azure",
+        "mode": "api_key"
+      },
+      "azure-gpt41:default": {
+      "provider": "azure-gpt41",
+      "mode": "api_key"
+    }
+    }
+  },
+  "models": {
+    "providers": {
+      "azure": {
+        "baseUrl": "http://10.11.197.97/openai/deployments/gpt-5.2",
+        "apiKey": "xxx",
+        "api": "openai-completions",
+        "authHeader": false,
+        "headers": { "api-key": "xxx" },
+        "models": [
+          {
+            "id": "gpt-5.2",
+            "name": "gpt-5.2",
+            "reasoning": false,
+            "input": [
+              "text", "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 400000,
+            "maxTokens": 128000,
+            "compat": {
+              "maxTokensField": "max_completion_tokens"
+            }
+          }
+        ]
+      },
+      "azure-gpt41": {
+        "baseUrl": "http://10.11.197.97/openai/deployments/gpt-4.1",
+        "apiKey": "xxx",
+        "api": "openai-completions",
+        "authHeader": false,
+        "headers": { "api-key": "xxx" },
+        "models": [
+          {
+            "id": "gpt-4.1",
+            "name": "gpt-4.1",
+            "reasoning": false,
+            "input": [
+              "text", "image"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1047576,
+            "maxTokens": 32768            
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "azure/gpt-5.2"
+      },
+      "models": {
+        "azure/gpt-5.2": {},
+        "azure-gpt41/gpt-4.1": {}
+      },
+      "workspace": "/home/node/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        },
+        "bootstrap-extra-files": {
+          "enabled": true
+        },
+        "command-logger": {
+          "enabled": true
+        },
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "allowInsecureAuth": true,
+      "allowedOrigins": [
+        "http://localhost:18789",
+        "http://127.0.0.1:18789",
+        "http://10.11.108.117:18789",
+        "http://10.11.108.117:28789",
+        "https://ominous-adventure-jvxwqqj6g4ghq464-18789.app.github.dev"
+      ]
+    },
+    "auth": {
+      "mode": "token",
+      "token": "xxx"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "http": {
+      "endpoints": {
+        "chatCompletions": {
+          "enabled": true
+        }
+      }
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "calendar.add",
+        "contacts.add",
+        "reminders.add"
+      ]
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  }
+}

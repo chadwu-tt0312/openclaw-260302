@@ -100,4 +100,32 @@ describe("checkBrowserOrigin", () => {
     });
     expect(result.ok).toBe(true);
   });
+
+  it("accepts request origin with explicit :443 when allowlist has no port (e.g. GitHub Codespaces)", () => {
+    const result = checkBrowserOrigin({
+      requestHost: "ominous-adventure-jvxwqqj6g4ghq464-18789.app.github.dev",
+      origin: "https://ominous-adventure-jvxwqqj6g4ghq464-18789.app.github.dev:443",
+      allowedOrigins: ["https://ominous-adventure-jvxwqqj6g4ghq464-18789.app.github.dev"],
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.matchedBy).toBe("allowlist");
+  });
+
+  it("accepts request origin without port when allowlist has :443", () => {
+    const result = checkBrowserOrigin({
+      requestHost: "control.example.com",
+      origin: "https://control.example.com",
+      allowedOrigins: ["https://control.example.com:443"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts http request origin with :80 when allowlist has no port", () => {
+    const result = checkBrowserOrigin({
+      requestHost: "localhost:18789",
+      origin: "http://localhost:80",
+      allowedOrigins: ["http://localhost"],
+    });
+    expect(result.ok).toBe(true);
+  });
 });
