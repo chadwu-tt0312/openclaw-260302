@@ -35,3 +35,16 @@ curl http://localhost:18789/v1/chat/completions \
     ],
     "stream": false
   }'
+
+### test API-02
+curl http://10.11.108.117:28789/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer xxx" \
+  -d '{
+    "model": "azure/gpt-5.2",
+    "messages": [
+      {"role": "system", "content": "你是一個專業的技術助手。"},
+      {"role": "user", "content": "嘿爪子，幫我解釋一下什麼是 K8s Operator？"}
+    ],
+    "stream": false
+  }'

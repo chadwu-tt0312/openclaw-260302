@@ -1,12 +1,12 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.3.1-beta.1",
-    "lastTouchedAt": "2026-03-04T05:12:28.512Z"
+    "lastTouchedAt": "2026-03-06T01:40:18.068Z"
   },
   "wizard": {
-    "lastRunAt": "2026-03-04T05:11:14.923Z",
+    "lastRunAt": "2026-03-06T01:40:18.057Z",
     "lastRunVersion": "2026.3.1-beta.1",
-    "lastRunCommand": "onboard",
+    "lastRunCommand": "configure",
     "lastRunMode": "local"
   },
   "auth": {
@@ -15,10 +15,14 @@
         "provider": "azure",
         "mode": "api_key"
       },
-      "azure-gpt41:default": {
-      "provider": "azure-gpt41",
-      "mode": "api_key"
-    }
+      "azure-gpt41": {
+        "provider": "azure-gpt41",
+        "mode": "api_key"
+      },
+      "openai": {
+        "provider": "openai",
+        "mode": "api_key"
+      }
     }
   },
   "models": {
@@ -27,15 +31,18 @@
         "baseUrl": "http://10.11.197.97/openai/deployments/gpt-5.2",
         "apiKey": "xxx",
         "api": "openai-completions",
+        "headers": {
+          "api-key": "xxx"
+        },
         "authHeader": false,
-        "headers": { "api-key": "xxx" },
         "models": [
           {
             "id": "gpt-5.2",
             "name": "gpt-5.2",
             "reasoning": false,
             "input": [
-              "text", "image"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -55,15 +62,18 @@
         "baseUrl": "http://10.11.197.97/openai/deployments/gpt-4.1",
         "apiKey": "xxx",
         "api": "openai-completions",
+        "headers": {
+          "api-key": "xxx"
+        },
         "authHeader": false,
-        "headers": { "api-key": "xxx" },
         "models": [
           {
             "id": "gpt-4.1",
             "name": "gpt-4.1",
             "reasoning": false,
             "input": [
-              "text", "image"
+              "text",
+              "image"
             ],
             "cost": {
               "input": 0,
@@ -72,7 +82,7 @@
               "cacheWrite": 0
             },
             "contextWindow": 1047576,
-            "maxTokens": 32768            
+            "maxTokens": 32768
           }
         ]
       }
@@ -81,7 +91,10 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "azure/gpt-5.2"
+        "primary": "azure/gpt-5.2",
+        "fallbacks": [
+          "azure-gpt41/gpt-4.1"
+        ]
       },
       "models": {
         "azure/gpt-5.2": {},
@@ -138,8 +151,7 @@
         "http://localhost:18789",
         "http://127.0.0.1:18789",
         "http://10.11.108.117:18789",
-        "http://10.11.108.117:28789",
-        "https://ominous-adventure-jvxwqqj6g4ghq464-18789.app.github.dev"
+        "http://10.11.108.117:28789"
       ]
     },
     "auth": {

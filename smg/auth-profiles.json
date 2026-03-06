@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "profiles": {
+    "azure:default": {
+      "type": "api_key",
+      "provider": "azure",
+      "key": "xxx"
+    },
+    "openai": {
+      "type": "api_key",
+      "provider": "openai",
+      "key": "xxx"
+    }
+  },
+  "usageStats": {
+    "azure:default": {
+      "lastUsed": 1772762084748,
+      "errorCount": 0
+    }
+  }
+}

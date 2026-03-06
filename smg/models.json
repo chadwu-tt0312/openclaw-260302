@@ -1,0 +1,65 @@
+{
+  "providers": {
+    "azure": {
+      "baseUrl": "http://10.11.197.97/openai/deployments/gpt-5.2",
+      "apiKey": "xxx",
+      "api": "openai-completions",
+      "headers": {
+        "api-key": "xxx"
+      },
+      "authHeader": false,
+      "models": [
+        {
+          "id": "gpt-5.2",
+          "name": "gpt-5.2",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 400000,
+          "maxTokens": 128000,
+          "compat": {
+            "maxTokensField": "max_completion_tokens"
+          },
+          "api": "openai-completions"
+        }
+      ]
+    },
+    "azure-gpt41": {
+      "baseUrl": "http://10.11.197.97/openai/deployments/gpt-4.1",
+      "apiKey": "xxx",
+      "api": "openai-completions",
+      "headers": {
+        "api-key": "xxx"
+      },
+      "authHeader": false,
+      "models": [
+        {
+          "id": "gpt-4.1",
+          "name": "gpt-4.1",
+          "reasoning": false,
+          "input": [
+            "text",
+            "image"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          },
+          "contextWindow": 1047576,
+          "maxTokens": 32768,
+          "api": "openai-completions"
+        }
+      ]
+    }
+  }
+}
